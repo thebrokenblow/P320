@@ -1,0 +1,73 @@
+﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model List<Lesson2.Model.Cat>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <style>
+            .card-deck {
+                padding: 20px;
+                gap: 20px;
+            }
+
+            .card {
+                height: 100%;
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+            }
+
+                .card:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                }
+
+            .card-img-top {
+                height: 200px;
+                object-fit: cover;
+            }
+
+            .card-body {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .card-text {
+                margin-bottom: 8px;
+            }
+
+            .cat-age {
+                font-weight: bold;
+                color: #007bff;
+            }
+
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card-deck">
+            @foreach (var cat in Model)
+            {
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <div class="card h-100">
+                        <img class="card-img-top" src="@cat.PhotoSrc" alt="@cat.Name">
+                        <div class="card-body">
+                            <h5 class="card-title">@cat.Name</h5>
+                            <p class="card-text cat-age">Возраст: @cat.Age лет</p>
+                            <p class="card-text">@cat.Description</p>
+                            <a asp-controller="Home" asp-action="Details" asp-route-id="@cat.Id">Детали</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</body>
+</html>
