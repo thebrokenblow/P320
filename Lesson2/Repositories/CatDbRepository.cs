@@ -3,11 +3,11 @@ using Lesson2.Repositories.Interfaces;
 
 namespace Lesson2.Repositories;
 
-public class CatRepository : ICatRepository
+public class CatDbRepository : ICatRepository
 {
     private List<Cat> _cats;
 
-    public CatRepository()
+    public CatDbRepository()
     {
         _cats = new List<Cat>
         {
