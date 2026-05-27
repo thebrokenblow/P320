@@ -37,4 +37,9 @@ public class HomeController : Controller
 
         return View(cat);
     }
+
+    public IActionResult Contact()
+    {
+        return View();
+    }
 }

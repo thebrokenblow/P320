@@ -1,25 +1,49 @@
-﻿//Dependency Injection Container(DIC) — это инструмент для автоматического создания объектов и
-//управления их зависимостями.
+﻿////Dependency Injection Container(DIC) — это инструмент для автоматического создания объектов и
+////управления их зависимостями.
 using Microsoft.Extensions.DependencyInjection;
 
 var services = new ServiceCollection();
 
 //Регистрация интерфейса + класса
-services.AddTransient<IСurrencyService, СurrencyService>();
-services.AddTransient<IOrderRepository, SqlOrderRepository>();
-services.AddTransient<IOrderRepository, NoSqlOrderRepository>();
+services.AddSingleton<IСurrencyService, СurrencyService>();
+services.AddSingleton<IOrderRepository, SqlOrderRepository>();
+services.AddSingleton<IOrderRepository, NoSqlOrderRepository>();
 
-services.AddTransient<ICloudService, CloudService>();
+services.AddSingleton<ICloudService, CloudService>();
 
-services.AddTransient<Order>();
-services.AddTransient<Order12>();
+services.AddSingleton<Order>();
 
 var serviceProvider = services.BuildServiceProvider();
 
-var order = serviceProvider.GetRequiredService<Order>();
-var order12 = serviceProvider.GetRequiredService<Order12>();
+var order1 = serviceProvider.GetRequiredService<Order>();
+var order2 = serviceProvider.GetRequiredService<Order>();
 
- Console.ReadLine();
+if (order1 == order2)
+{
+    
+}
+
+Console.ReadLine();
+
+
+
+
+class SomeClass
+{
+    private SomeClass() { }
+
+    private static SomeClass? _someClass;
+    public static SomeClass GetInstance()
+    {
+        //if (_someClass == null)
+        //{
+            _someClass = new SomeClass();
+        //}
+
+        return _someClass;
+    }
+}
+
 
 
 interface IOrderRepository
