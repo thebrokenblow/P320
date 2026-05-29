@@ -1,5 +1,5 @@
+
 using Lesson2.Repositories;
-using Lesson2.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Lesson2.Controllers;
@@ -24,16 +24,16 @@ public class HomeController : Controller
         _catRepository = catRepository;
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        var cats = _catRepository.Get();
+        var cats = await _catRepository.GetAllAsync();
 
         return View(cats);
     }
 
-    public IActionResult Details(int id)
+    public async Task<IActionResult> Details(int id)
     {
-        var cat = _catRepository.GetById(id);
+        var cat = await _catRepository.GetDetailsById(id);
 
         return View(cat);
     }

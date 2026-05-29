@@ -8,4 +8,6 @@ public class Cat
     public required int Age { get; set; }
     public required string PhotoSrc { get; set; }
 
+    public required int BreedId { get; set; }
+    public Breed? Breed { get; set; }
 }

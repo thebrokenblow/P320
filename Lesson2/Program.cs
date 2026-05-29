@@ -1,12 +1,16 @@
+using Lesson2.Data;
 using Lesson2.Repositories;
-using Lesson2.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddTransient<ICatRepository, CatDbRepository>();
+string connection = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=CatDatabase;Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False;Command Timeout=30";
+builder.Services.AddDbContext<CatDbContext>(options =>
+    options.UseSqlServer(connection));
 
+builder.Services.AddScoped<ICatRepository, CatRepository>();
 
 var app = builder.Build();
 

@@ -5,15 +5,28 @@ using Microsoft.Extensions.DependencyInjection;
 var services = new ServiceCollection();
 
 //Регистрация интерфейса + класса
-services.AddSingleton<IСurrencyService, СurrencyService>();
+services.AddScoped<IСurrencyService, СurrencyService>();
 services.AddSingleton<IOrderRepository, SqlOrderRepository>();
-services.AddSingleton<IOrderRepository, NoSqlOrderRepository>();
 
 services.AddSingleton<ICloudService, CloudService>();
 
-services.AddSingleton<Order>();
+services.AddSingleton<SomeClass>();
 
 var serviceProvider = services.BuildServiceProvider();
+
+
+var scope1 = serviceProvider.CreateScope();
+var currencyService1 = scope1.ServiceProvider.GetRequiredService<IСurrencyService>();
+var currencyService2 = scope1.ServiceProvider.GetRequiredService<IСurrencyService>();
+
+
+var scope2 = serviceProvider.CreateScope();
+var currencyService3 = scope2.ServiceProvider.GetRequiredService<IСurrencyService>();
+
+if (currencyService1 == currencyService3)
+{
+    
+}
 
 var order1 = serviceProvider.GetRequiredService<Order>();
 var order2 = serviceProvider.GetRequiredService<Order>();
@@ -30,18 +43,7 @@ Console.ReadLine();
 
 class SomeClass
 {
-    private SomeClass() { }
-
-    private static SomeClass? _someClass;
-    public static SomeClass GetInstance()
-    {
-        //if (_someClass == null)
-        //{
-            _someClass = new SomeClass();
-        //}
-
-        return _someClass;
-    }
+    public SomeClass() { }
 }
 
 
