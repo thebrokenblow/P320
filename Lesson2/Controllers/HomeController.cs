@@ -1,4 +1,5 @@
 
+using Lesson2.Model;
 using Lesson2.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
@@ -36,6 +37,28 @@ public class HomeController : Controller
         var cat = await _catRepository.GetDetailsById(id);
 
         return View(cat);
+    }
+
+    public IActionResult Create()
+    {
+        var cat = new Cat
+        {
+            Name = string.Empty,
+            Description = string.Empty,
+            Age = default,
+            PhotoSrc = string.Empty,
+            BreedId = 1
+        };
+
+        return View(cat);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create(Cat cat)
+    {
+        await _catRepository.AddAsync(cat);
+
+        return RedirectToAction("Index", "Home");
     }
 
     public IActionResult Contact()

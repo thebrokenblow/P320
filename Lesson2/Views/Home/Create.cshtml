@@ -1,0 +1,33 @@
+﻿@model Lesson2.Model.Cat
+
+
+<h1>Создать</h1>
+
+<form method="post">
+    <div class="form-group">
+        <label>Имя котика: </label>
+        <input asp-for="@Model.Name" type="text" class="form-control" placeholder="Имя котика">
+    </div>
+
+    <div class="form-group">
+        <label>Описание котика: </label>
+        <input asp-for="@Model.Description" type="text" class="form-control" placeholder="Описание котика">
+    </div>
+
+    <div class="form-group">
+        <label>Возраст котика: </label>
+        <input asp-for="@Model.Age" type="number" class="form-control" placeholder="Возраст котика">
+    </div>
+
+    <div class="form-group">
+        <label>Ссылка на фотографию котика: </label>
+        <input asp-for="@Model.PhotoSrc" type="text" class="form-control" placeholder="Ссылка на фотографию котика">
+    </div>
+
+    <div class="form-group">
+        <label>Порода: </label>
+        <input asp-for="@Model.BreedId" type="hidden" class="form-control" placeholder="порода">
+    </div>
+
+    <input type="submit" class="btn btn-primary" value="Создать" />
+</form>
