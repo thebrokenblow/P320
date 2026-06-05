@@ -1,5 +1,6 @@
 using Lesson2.Data;
 using Lesson2.Repositories;
+using Lesson2.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +11,7 @@ string connection = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=CatData
 builder.Services.AddDbContext<CatDbContext>(options =>
     options.UseSqlServer(connection));
 
+builder.Services.AddScoped<IBreedRepository, BreedRepository>();
 builder.Services.AddScoped<ICatRepository, CatRepository>();
 
 var app = builder.Build();

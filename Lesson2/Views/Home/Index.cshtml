@@ -14,7 +14,13 @@
                         </p>
                         <p class="card-text flex-grow-1">@cat.Description</p>
                         <a asp-controller="Home" asp-action="Details" asp-route-id="@cat.Id" class="btn btn-outline-primary mt-2 rounded-pill">
-                            Подробнее →
+                            Подробнее
+                        </a>
+                        <a asp-controller="Home" asp-action="Edit" asp-route-id="@cat.Id" class="btn btn-outline-warning mt-2 rounded-pill">
+                            Редактировать
+                        </a>
+                        <a asp-controller="Home" asp-action="Delete" asp-route-id="@cat.Id" class="btn btn-outline-danger mt-2 rounded-pill">
+                            Удалить
                         </a>
                     </div>
                 </div>

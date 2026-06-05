@@ -1,33 +1,19 @@
-﻿@model Lesson2.ViewModel.CreateCatViewModel
+﻿@model Lesson2.ViewModel.EditCatViewModel
 
 
-<h1>Создать</h1>
+<h1>Редактировать</h1>
 
 <form method="post">
+    <input asp-for="@Model.Cat.Id" type="hidden">
+
     <div class="form-group">
         <label>Имя котика: </label>
         <input asp-for="@Model.Cat.Name" type="text" class="form-control" placeholder="Имя котика">
-        
-        @if (Model.ErrorsByProperty.ContainsKey("Name"))
-        {
-                @foreach (var error in Model.ErrorsByProperty["Name"])
-                {
-                <small class="form-text text-danger">@error</small>
-                }
-        }
     </div>
 
     <div class="form-group">
         <label>Описание котика: </label>
         <input asp-for="@Model.Cat.Description" type="text" class="form-control" placeholder="Описание котика">
-        
-        @if (Model.ErrorsByProperty.ContainsKey("Description"))
-        {
-            @foreach (var error in Model.ErrorsByProperty["Description"])
-            {
-                <small class="form-text text-danger">@error</small>
-            }
-        }
     </div>
 
     <div class="form-group">
@@ -50,7 +36,5 @@
         </select>
     </div>
 
-    <input asp-for="@Model.Breeds" type="hidden">
-
-    <input type="submit" class="btn btn-primary" value="Создать" />
+    <input type="submit" class="btn btn-primary" value="Сохранить" />
 </form>

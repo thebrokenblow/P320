@@ -1,6 +1,7 @@
 
 using Lesson2.Model;
-using Lesson2.Repositories;
+using Lesson2.Repositories.Interfaces;
+using Lesson2.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Lesson2.Controllers;
@@ -20,9 +21,12 @@ namespace Lesson2.Controllers;
 public class HomeController : Controller
 {
     private readonly ICatRepository _catRepository;
-    public HomeController(ICatRepository catRepository)
+    private readonly IBreedRepository _breedRepository;
+
+    public HomeController(ICatRepository catRepository, IBreedRepository breedRepository)
     {
         _catRepository = catRepository;
+        _breedRepository = breedRepository;
     }
 
     public async Task<IActionResult> Index()
@@ -39,7 +43,37 @@ public class HomeController : Controller
         return View(cat);
     }
 
-    public IActionResult Create()
+    public async Task<IActionResult> Delete(int id)
+    {
+        await _catRepository.DeleteById(id);
+
+        return RedirectToAction("Index", "Home");
+    }
+
+    public async Task<IActionResult> Edit(int id)
+    {
+        var cat = await _catRepository.GetDetailsById(id);
+        var breeds = await _breedRepository.GetAllAsync();
+
+        var editCatViewModel = new EditCatViewModel()
+        {
+            Cat = cat,
+            Breeds = breeds
+        };
+
+        return View(editCatViewModel);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Edit(EditCatViewModel editCatViewModel)
+    {
+        editCatViewModel.Breeds = await _breedRepository.GetAllAsync();
+        await _catRepository.EditAsync(editCatViewModel.Cat);
+
+        return RedirectToAction("Index", "Home");
+    }
+
+    public async Task<IActionResult> Create()
     {
         var cat = new Cat
         {
@@ -50,13 +84,54 @@ public class HomeController : Controller
             BreedId = 1
         };
 
-        return View(cat);
+        var breeds = await _breedRepository.GetAllAsync();
+
+        var createCatViewModel = new CreateCatViewModel()
+        {
+            Cat = cat,
+            Breeds = breeds,
+            ErrorsByProperty = []
+        };
+
+        return View(createCatViewModel);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(Cat cat)
+    public async Task<IActionResult> Create(CreateCatViewModel createCatViewModel)
     {
-        await _catRepository.AddAsync(cat);
+        createCatViewModel.Breeds = await _breedRepository.GetAllAsync();
+
+        var errorsByProperty = new Dictionary<string, List<string>>
+        {
+            ["Name"] = [],
+            ["Description"] = []
+        };
+        
+        if (createCatViewModel.Cat.Name == null)
+        {
+            errorsByProperty["Name"].Add("Вы ввели пустое имя");
+        }
+
+        if (createCatViewModel.Cat.Description == null)
+        {
+            errorsByProperty["Description"].Add("Вы ввели пустое описание");
+        }
+
+        if (createCatViewModel.Cat.Description?.Length > 1000)
+        {
+            errorsByProperty["Description"].Add("Вы ввели слишком большое описание, максимальный размер 1000 символов");
+        }
+
+        if (errorsByProperty["Name"].Count > 0 || errorsByProperty["Description"].Count > 0)
+        {
+            createCatViewModel.ErrorsByProperty = errorsByProperty;
+            return View(createCatViewModel);
+        }
+
+        createCatViewModel.Cat.Name = createCatViewModel.Cat.Name.Trim();
+        createCatViewModel.Cat.Description = createCatViewModel.Cat.Description.Trim();
+
+        await _catRepository.AddAsync(createCatViewModel.Cat);
 
         return RedirectToAction("Index", "Home");
     }
