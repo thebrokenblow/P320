@@ -5,13 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Lesson2.Repositories;
 
-public class BreedRepository : IBreedRepository
+public class BreedRepository(CatDbContext catDbContext) : IBreedRepository
 {
-    private readonly CatDbContext _catDbContext;
-    public BreedRepository(CatDbContext catDbContext)
-    {
-        _catDbContext = catDbContext;
-    }
+    private readonly CatDbContext _catDbContext = catDbContext;
 
     public async Task<List<Breed>> GetAllAsync()
     {

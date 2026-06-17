@@ -10,10 +10,10 @@
         
         @if (Model.ErrorsByProperty.ContainsKey("Name"))
         {
-                @foreach (var error in Model.ErrorsByProperty["Name"])
-                {
+            @foreach (var error in Model.ErrorsByProperty["Name"])
+            {
                 <small class="form-text text-danger">@error</small>
-                }
+            }
         }
     </div>
 
@@ -32,7 +32,7 @@
 
     <div class="form-group">
         <label>Возраст котика: </label>
-        <input asp-for="@Model.Cat.Age" type="number" class="form-control" placeholder="Возраст котика">
+        <input asp-for="@Model.Cat.DateOfBirth" type="date" class="form-control" placeholder="Возраст котика">
     </div>
 
     <div class="form-group">
@@ -42,12 +42,7 @@
 
     <div class="form-group">
         <label>Порода: </label>
-        <select asp-for="@Model.Cat.BreedId">
-            @for (int i = 0; i < Model.Breeds.Count; i++)
-            {
-                <option value="@Model.Breeds[i].Id">@Model.Breeds[i].Name</option>
-            }
-        </select>
+        <select asp-for="@Model.Cat.BreedId" asp-items="@Model.Breeds"></select>
     </div>
 
     <input asp-for="@Model.Breeds" type="hidden">

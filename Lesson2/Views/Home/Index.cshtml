@@ -1,8 +1,14 @@
-﻿@model List<Lesson2.Model.Cat>
+﻿@model Lesson2.ViewModel.FilteredCatsViewModel
 
 <div class="container mt-4">
+    <form method="get">
+        <div class="form-group d-flex justify-content-between">
+            <input type="text" value="@Model.NameCat" name="nameCat" class="form-control" placeholder="Введите имя котика">
+            <button type="submit" class="btn btn-primary">Найти</button>
+        </div>
+    </form>
     <div class="row g-4">
-        @foreach (var cat in Model)
+        @foreach (var cat in Model.FilteredCats)
         {
             <div class="col-md-6 col-lg-4 col-xl-3">
                 <div class="card h-100 shadow-sm border-0 rounded-3 overflow-hidden">
@@ -10,7 +16,7 @@
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title fw-bold">@cat.Name</h5>
                         <p class="card-text text-muted cat-age">
-                            <i class="bi bi-calendar-heart"></i> Возраст: @cat.Age лет
+                            <i class="bi bi-calendar-heart"></i> Дата рождения: @cat.DateOfBirth
                         </p>
                         <p class="card-text flex-grow-1">@cat.Description</p>
                         <a asp-controller="Home" asp-action="Details" asp-route-id="@cat.Id" class="btn btn-outline-primary mt-2 rounded-pill">

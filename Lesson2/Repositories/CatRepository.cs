@@ -5,13 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Lesson2.Repositories;
 
-public class CatRepository : ICatRepository
+public class CatRepository(CatDbContext catDbContext) : ICatRepository
 {
-    private readonly CatDbContext _catDbContext;
-    public CatRepository(CatDbContext catDbContext)
-    {
-        _catDbContext = catDbContext;
-    }
+    private readonly CatDbContext _catDbContext = catDbContext;
 
     public async Task AddAsync(Cat cat)
     {
@@ -24,7 +20,7 @@ public class CatRepository : ICatRepository
         var editingCat = await GetById(cat.Id);
 
         editingCat.BreedId = cat.BreedId;
-        editingCat.Age = cat.Age;
+        editingCat.DateOfBirth = cat.DateOfBirth;
         editingCat.Description = cat.Description;
         editingCat.Name = cat.Name;
         editingCat.PhotoSrc = cat.PhotoSrc;
@@ -32,7 +28,7 @@ public class CatRepository : ICatRepository
         await _catDbContext.SaveChangesAsync();
     }
 
-    public async Task DeleteById(int id)
+    public async Task DeleteByIdAsync(int id)
     {
         var cat = await GetById(id);
 
@@ -45,12 +41,17 @@ public class CatRepository : ICatRepository
         return await _catDbContext.Cats.ToListAsync();
     }
 
+    public async Task<List<Cat>> GetFilteredAsync(string nameCat)
+    {
+        return await _catDbContext.Cats.Where(cat => cat.Name.Contains(nameCat)).ToListAsync();
+    }
+
     public async Task<Cat> GetById(int id)
     {
         return await _catDbContext.Cats.FirstAsync(x => x.Id == id);
     }
 
-    public async Task<Cat> GetDetailsById(int id)
+    public async Task<Cat> GetDetailsByIdAsync(int id)
     {
         return await _catDbContext.Cats.Include(x => x.Breed).FirstAsync(x => x.Id == id);
     }

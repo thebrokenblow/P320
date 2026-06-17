@@ -1,0 +1,34 @@
+﻿@model Lesson2.Model.Cat
+
+
+<h1>Удаление Записи.</h1>
+<h1>Вы уверены, что хотите удалить эту запись?</h1>
+
+
+<form method="post">
+    <div class="form-group">
+        <label>Имя котика: </label>
+        <input value="@Model.Name" type="text" class="form-control" disabled>
+    </div>
+
+    <div class="form-group">
+        <label>Описание котика: </label>
+        <input value="@Model.Description" type="text" class="form-control" disabled>
+    </div>
+
+    <div class="form-group">
+        <label>Дата рождения: </label>
+        <input value="@Model.DateOfBirth" type="text" class="form-control" disabled>
+    </div>
+
+    <div class="form-group">
+        <img class="card-img-top" src="@Model.PhotoSrc" alt="@Model.Name" style="width: 300px; object-fit: cover;" disabled>
+    </div>
+
+    <div class="form-group">
+        <label>Порода: </label>
+        <input value="@Model.Breed.Name" type="text" class="form-control" disabled>
+    </div>
+
+    <input type="submit" class="btn btn-danger" value="Удалить" />
+</form>

@@ -1,8 +1,10 @@
 
+using Lesson2.Extensions;
 using Lesson2.Model;
 using Lesson2.Repositories.Interfaces;
 using Lesson2.ViewModel;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Lesson2.Controllers;
 
@@ -29,30 +31,57 @@ public class HomeController : Controller
         _breedRepository = breedRepository;
     }
 
-    public async Task<IActionResult> Index()
+    [HttpGet]
+    public async Task<IActionResult> Index(string nameCat)
     {
-        var cats = await _catRepository.GetAllAsync();
+        FilteredCatsViewModel filteredCatsViewModel;
 
-        return View(cats);
+        if (!string.IsNullOrEmpty(nameCat))
+        {
+            filteredCatsViewModel = new FilteredCatsViewModel
+            {
+                NameCat = nameCat,
+                FilteredCats = await _catRepository.GetFilteredAsync(nameCat)
+            };
+        }
+        else
+        {
+            filteredCatsViewModel = new FilteredCatsViewModel
+            {
+                NameCat = nameCat,
+                FilteredCats = await _catRepository.GetAllAsync()
+            };
+        }
+
+        return View(filteredCatsViewModel);
     }
 
     public async Task<IActionResult> Details(int id)
     {
-        var cat = await _catRepository.GetDetailsById(id);
+        var cat = await _catRepository.GetDetailsByIdAsync(id);
 
         return View(cat);
     }
 
     public async Task<IActionResult> Delete(int id)
     {
-        await _catRepository.DeleteById(id);
+        var cat = await _catRepository.GetDetailsByIdAsync(id);
 
-        return RedirectToAction("Index", "Home");
+        return View(cat);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Delete(Cat cat)
+    {
+        await _catRepository.DeleteByIdAsync(cat.Id);
+
+
+        return RedirectToMainPage();
     }
 
     public async Task<IActionResult> Edit(int id)
     {
-        var cat = await _catRepository.GetDetailsById(id);
+        var cat = await _catRepository.GetDetailsByIdAsync(id);
         var breeds = await _breedRepository.GetAllAsync();
 
         var editCatViewModel = new EditCatViewModel()
@@ -70,7 +99,10 @@ public class HomeController : Controller
         editCatViewModel.Breeds = await _breedRepository.GetAllAsync();
         await _catRepository.EditAsync(editCatViewModel.Cat);
 
-        return RedirectToAction("Index", "Home");
+        var nameAction = nameof(Index);
+        var nameController = this.GetName(nameof(HomeController));
+
+        return RedirectToAction(nameAction, nameController);
     }
 
     public async Task<IActionResult> Create()
@@ -79,7 +111,7 @@ public class HomeController : Controller
         {
             Name = string.Empty,
             Description = string.Empty,
-            Age = default,
+            DateOfBirth = DateOnly.FromDateTime(DateTime.Now),
             PhotoSrc = string.Empty,
             BreedId = 1
         };
@@ -89,7 +121,11 @@ public class HomeController : Controller
         var createCatViewModel = new CreateCatViewModel()
         {
             Cat = cat,
-            Breeds = breeds,
+            Breeds = [.. breeds.Select(breed => new SelectListItem
+            {
+                Value = breed.Id.ToString(),
+                Text = breed.Name
+            })],
             ErrorsByProperty = []
         };
 
@@ -99,7 +135,13 @@ public class HomeController : Controller
     [HttpPost]
     public async Task<IActionResult> Create(CreateCatViewModel createCatViewModel)
     {
-        createCatViewModel.Breeds = await _breedRepository.GetAllAsync();
+        var breeds = await _breedRepository.GetAllAsync();
+        createCatViewModel.Breeds = [.. breeds.Select(breed => new SelectListItem
+                                                               {
+                                                                    Value = breed.Id.ToString(),
+                                                                    Text = breed.Name
+                                                               }
+        )];
 
         var errorsByProperty = new Dictionary<string, List<string>>
         {
@@ -133,11 +175,19 @@ public class HomeController : Controller
 
         await _catRepository.AddAsync(createCatViewModel.Cat);
 
-        return RedirectToAction("Index", "Home");
+        return RedirectToMainPage();
     }
 
     public IActionResult Contact()
     {
         return View();
+    }
+
+    private IActionResult RedirectToMainPage()
+    {
+        var nameAction = nameof(Index);
+        var nameController = this.GetName(nameof(HomeController));
+
+        return RedirectToAction(nameAction, nameController);
     }
 }
