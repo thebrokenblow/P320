@@ -1,14 +1,16 @@
-﻿@model Lesson2.ViewModel.FilteredCatsViewModel
+﻿@using Lesson2.Model
+@using Lesson2.ViewModel
+@model IndexCatViewModel
 
 <div class="container mt-4">
     <form method="get">
         <div class="form-group d-flex justify-content-between">
-            <input type="text" value="@Model.NameCat" name="nameCat" class="form-control" placeholder="Введите имя котика">
+            <input type="text" value="@Model.FilteredCatsViewModel.NameCat" name="nameCat" class="form-control" placeholder="Введите имя котика">
             <button type="submit" class="btn btn-primary">Найти</button>
         </div>
     </form>
     <div class="row g-4">
-        @foreach (var cat in Model.FilteredCats)
+        @foreach (var cat in Model.PaginatedViewModelList.Items)
         {
             <div class="col-md-6 col-lg-4 col-xl-3">
                 <div class="card h-100 shadow-sm border-0 rounded-3 overflow-hidden">
@@ -19,6 +21,7 @@
                             <i class="bi bi-calendar-heart"></i> Дата рождения: @cat.DateOfBirth
                         </p>
                         <p class="card-text flex-grow-1">@cat.Description</p>
+
                         <a asp-controller="Home" asp-action="Details" asp-route-id="@cat.Id" class="btn btn-outline-primary mt-2 rounded-pill">
                             Подробнее
                         </a>
@@ -33,4 +36,23 @@
             </div>
         }
     </div>
+
+    <nav>
+        <ul class="pagination">
+            <li class="page-item @(Model.PaginatedViewModelList.HasPreviousPage ? string.Empty : "disabled")">
+                <a class="page-link" asp-route-nameCat="@Model.FilteredCatsViewModel.NameCat" asp-route-pageIndex="@(Model.PaginatedViewModelList.PageIndex - 1)">Предыдущая</a>
+            </li>
+
+            @for (int pageCount = 1; pageCount <= Model.PaginatedViewModelList.TotalPages; pageCount++)
+            {
+                <li class="page-item @(pageCount == Model.PaginatedViewModelList.PageIndex ? "active" : string.Empty)">
+                    <a class="page-link" asp-route-nameCat="@Model.FilteredCatsViewModel.NameCat" asp-route-pageIndex="@pageCount">@pageCount</a>
+                </li>
+            }
+
+            <li class="page-item @(Model.PaginatedViewModelList.HasNextPage ? string.Empty : "disabled")">
+                <a class="page-link" asp-route-nameCat="@Model.FilteredCatsViewModel.NameCat" asp-route-pageIndex="@(Model.PaginatedViewModelList.PageIndex + 1)">Следующая</a>
+            </li>
+      </ul>
+    </nav>
 </div>

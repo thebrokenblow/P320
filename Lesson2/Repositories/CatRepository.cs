@@ -36,14 +36,26 @@ public class CatRepository(CatDbContext catDbContext) : ICatRepository
         await _catDbContext.SaveChangesAsync();
     }
 
-    public async Task<List<Cat>> GetAllAsync()
+    public async Task<List<Cat>> GetAllAsync(int countSkip, int countTake)
     {
-        return await _catDbContext.Cats.ToListAsync();
+        try
+        {
+            return await _catDbContext.Cats.Skip(countSkip).Take(countTake).ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
     }
 
-    public async Task<List<Cat>> GetFilteredAsync(string nameCat)
+    public async Task<(int countCats, List<Cat> filteredCats)> GetFilteredAsync(string nameCat, int countSkip, int pageSize)
     {
-        return await _catDbContext.Cats.Where(cat => cat.Name.Contains(nameCat)).ToListAsync();
+        var queryFilteredCats = _catDbContext.Cats.Where(cat => cat.Name.Contains(nameCat));
+
+        var countCats = await queryFilteredCats.CountAsync();
+        var filteredCats = await queryFilteredCats.Skip(countSkip).Take(pageSize).ToListAsync();
+
+        return (countCats, filteredCats);
     }
 
     public async Task<Cat> GetById(int id)
@@ -54,5 +66,12 @@ public class CatRepository(CatDbContext catDbContext) : ICatRepository
     public async Task<Cat> GetDetailsByIdAsync(int id)
     {
         return await _catDbContext.Cats.Include(x => x.Breed).FirstAsync(x => x.Id == id);
+    }
+
+    public async Task<int> GetCountAsync()
+    {
+        var count = await _catDbContext.Cats.CountAsync();
+
+        return count;
     }
 }

@@ -1,6 +1,7 @@
 
 using Lesson2.Extensions;
 using Lesson2.Model;
+using Lesson2.Repositories;
 using Lesson2.Repositories.Interfaces;
 using Lesson2.ViewModel;
 using Microsoft.AspNetCore.Mvc;
@@ -25,6 +26,7 @@ public class HomeController : Controller
     private readonly ICatRepository _catRepository;
     private readonly IBreedRepository _breedRepository;
 
+    private const int pageSize = 10;
     public HomeController(ICatRepository catRepository, IBreedRepository breedRepository)
     {
         _catRepository = catRepository;
@@ -32,28 +34,45 @@ public class HomeController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Index(string nameCat)
+    public async Task<IActionResult> Index(string? nameCat = null, int pageIndex = 1)
     {
+        List<Cat> filteredCats;
         FilteredCatsViewModel filteredCatsViewModel;
 
+        int countCats;
+        var countSkip = (pageIndex - 1) * pageSize;
         if (!string.IsNullOrEmpty(nameCat))
         {
+            var filteredCatsDto = await _catRepository.GetFilteredAsync(nameCat, countSkip, pageSize);
+
+            filteredCats = filteredCatsDto.filteredCats;
+            countCats = filteredCatsDto.countCats;
+
             filteredCatsViewModel = new FilteredCatsViewModel
             {
                 NameCat = nameCat,
-                FilteredCats = await _catRepository.GetFilteredAsync(nameCat)
             };
         }
         else
         {
+            countCats = await _catRepository.GetCountAsync();
+            filteredCats = await _catRepository.GetAllAsync(countSkip, pageSize);
+
             filteredCatsViewModel = new FilteredCatsViewModel
             {
                 NameCat = nameCat,
-                FilteredCats = await _catRepository.GetAllAsync()
             };
         }
 
-        return View(filteredCatsViewModel);
+        var paginatedViewModelList = new PaginatedViewModelList<Cat>(filteredCats, countCats, pageIndex, pageSize);
+
+        var indexCatViewModel = new IndexCatViewModel
+        {
+            FilteredCatsViewModel = filteredCatsViewModel,
+            PaginatedViewModelList = paginatedViewModelList
+        };
+
+        return View(indexCatViewModel);
     }
 
     public async Task<IActionResult> Details(int id)

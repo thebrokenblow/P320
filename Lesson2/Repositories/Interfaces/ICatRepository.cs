@@ -7,7 +7,8 @@ public interface ICatRepository
     Task AddAsync(Cat cat);
     Task EditAsync(Cat cat);
     Task DeleteByIdAsync(int id);
-    Task<List<Cat>> GetFilteredAsync(string nameCat);
-    Task<List<Cat>> GetAllAsync();
+    Task<(int countCats, List<Cat> filteredCats)> GetFilteredAsync(string nameCat, int countSkip, int pageSize);
+    Task<int> GetCountAsync();
+    Task<List<Cat>> GetAllAsync(int countSkip, int countTake);
     Task<Cat> GetDetailsByIdAsync(int id);
 }
