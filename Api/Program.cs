@@ -1,4 +1,6 @@
 using Api.Data;
+using Api.Repositories;
+using Api.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -11,6 +13,8 @@ string connection = builder.Configuration.GetConnectionString("DefaultConnection
 
 builder.Services.AddDbContext<ProductsContext>(options =>
     options.UseNpgsql(connection));
+
+builder.Services.AddScoped<IProductRepositrory, ProductRepository>();
 
 var app = builder.Build();
 

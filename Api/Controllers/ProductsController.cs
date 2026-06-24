@@ -1,51 +1,98 @@
-﻿using Api.Data;
+﻿using Api.DTOs;
+using Api.Exceptions;
 using Api.Model;
+using Api.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class ProductsController(ProductsContext productsContext) : ControllerBase
+public class ProductsController(IProductRepositrory productsContext) : ControllerBase
 {
     [HttpGet]
-    public async Task<List<Product>> GetAsync()
+    public async Task<ActionResult<List<Product>>> GetAllAsync()
     {
-        return await productsContext.Products.ToListAsync();
+        var products = await productsContext.GetAllAsync();
+
+        return Ok(products);
     }
 
     [HttpGet("{id}")]
-    public async Task<Product> GetByIdAsync(int id)
+    public async Task<ActionResult<Product>> GetByIdAsync(int id)
     {
-        return await productsContext.Products.FirstAsync(x => x.Id == id);
+        var product = await productsContext.GetByIdAsync(id);
+
+        if (product == null)
+        {
+            return NotFound();    
+        }
+
+        return Ok(product);
     }
 
     [HttpPost]
-    public async Task CreateAsync([FromBody] Product product)
+    public async Task<ActionResult> CreateAsync([FromBody] CreateProduct createProduct)
     {
-        await productsContext.AddAsync(product);
-        await productsContext.SaveChangesAsync();
+        if (string.IsNullOrEmpty(createProduct.Name) || createProduct.Name.Length > 100)
+        {
+            return BadRequest();
+        }
+
+        if (string.IsNullOrEmpty(createProduct.Description) || createProduct.Name.Length > 2000)
+        {
+            return BadRequest();
+        }
+
+        if (createProduct.Price <= 0)
+        {
+            return BadRequest();
+        }
+
+        await productsContext.CreateAsync(createProduct);
+
+        return Created();
     }
 
     [HttpPut]
-    public async Task UpdateAsync([FromBody] Product product)
+    public async Task<ActionResult> UpdateAsync([FromBody] UpdateProduct updateProduct)
     {
-        var updatingProduct = await productsContext.Products.FirstAsync(x => x.Id == product.Id);
+        if (string.IsNullOrEmpty(updateProduct.Name) || updateProduct.Name.Length > 100)
+        {
+            return BadRequest();
+        }
 
-        updatingProduct.Name = product.Name;
-        updatingProduct.Description = product.Description;
-        updatingProduct.Price = product.Price;
+        if (string.IsNullOrEmpty(updateProduct.Description) || updateProduct.Name.Length > 2000)
+        {
+            return BadRequest();
+        }
 
-        await productsContext.SaveChangesAsync();
+        if (updateProduct.Price <= 0)
+        {
+            return BadRequest();
+        }
+
+        await productsContext.UpdateAsync(updateProduct);
+
+        return Ok();
     }
 
     [HttpDelete("{id}")]
-    public async Task UpdateAsync(int id)
+    public async Task<ActionResult> DeleteAsync(int id)
     {
-        var product = await productsContext.Products.FirstAsync(x => x.Id == id);
+        try
+        {
+            await productsContext.DeleteAsync(id);
+        }
+        catch (NotFoundException)
+        {
+            return NotFound();
+        }
+        catch (Exception)
+        {
+            return BadRequest();
+        }
 
-        productsContext.Remove(product);
-        await productsContext.SaveChangesAsync();
+        return Ok();
     }
 }
