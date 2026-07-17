@@ -1,5 +1,6 @@
 
 using Lesson2.Extensions;
+using Lesson2.Filters;
 using Lesson2.Model;
 using Lesson2.Repositories;
 using Lesson2.Repositories.Interfaces;
@@ -34,10 +35,14 @@ public class HomeController : Controller
     }
 
     [HttpGet]
+    [LogRequest]
+    [MyException]
     public async Task<IActionResult> Index(string? nameCat = null, int pageIndex = 1)
     {
         List<Cat> filteredCats;
         FilteredCatsViewModel filteredCatsViewModel;
+
+        throw new Exception("tes");
 
         int countCats;
         var countSkip = (pageIndex - 1) * pageSize;
